@@ -1,5 +1,6 @@
-- name: JMeter Role
+- name: JMeter Role Test
   hosts: all
   become: true
+
   roles:
     - jmeter
