@@ -16,6 +16,12 @@ source "amazon-ebs" "ubuntu" {
   instance_type = "t2.micro"
   region        = "ap-northeast-2"
   ssh_username  = "ubuntu"
+
+  subnet_id     = "subnet-0f145b66fff04c74c"
+  vpc_id        = "vpc-0af1789b7ab0aff80"
+  associate_public_ip_address = true
+  ssh_interface = "public_ip"
+
   source_ami_filter {
     filters = {
       name                = "ubuntu/images/*ubuntu-jammy-22.04-amd64-server-*"
@@ -33,5 +39,11 @@ build {
 
   provisioner "ansible" {
     playbook_file = "./playbook.yml"
+    extra_arguments  = ["--user=ubuntu"]
+    ansible_env_vars = [
+      "ANSIBLE_ROLES_PATH=../roles",
+      "ANSIBLE_REMOTE_TEMP=/tmp/ansible-remote"
+    ]
   }
 }
+
