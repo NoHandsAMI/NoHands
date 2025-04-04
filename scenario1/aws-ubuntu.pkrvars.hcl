@@ -1,5 +1,0 @@
-region            = "ap-northeast-2"
-instance_type     = "t2.micro"
-base_ami          = "ami-05a7f3469a7653972"
-subnet_id         = "subnet-0f145b66fff04c74c"
-security_group_id = "sg-0817758f51fa89740"
