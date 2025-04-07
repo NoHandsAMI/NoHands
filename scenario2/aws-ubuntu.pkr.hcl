@@ -27,6 +27,7 @@ source "amazon-ebs" "ubuntu" {
 
   subnet_id     = var.subnet_id
   vpc_id        = var.vpc_id
+  
   associate_public_ip_address = true
   ssh_interface = "public_ip"
 
