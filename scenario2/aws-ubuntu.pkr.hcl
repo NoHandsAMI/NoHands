@@ -48,11 +48,7 @@ build {
 
   provisioner "ansible" {
     playbook_file = "./playbook.yml"
-<<<<<<< Updated upstream
-    extra_arguments  = ["--user=ubuntu"]
-=======
-    extra_arguments  = ["--user=ubuntu", "--become", "--become-method=sudo"]
->>>>>>> Stashed changes
+    extra_arguments  = ["--user=ubuntu", "--become"]
     ansible_env_vars = [
       "ANSIBLE_ROLES_PATH=../roles",
       "ANSIBLE_REMOTE_TEMP=/tmp/ansible-remote"
