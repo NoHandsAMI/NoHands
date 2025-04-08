@@ -64,5 +64,6 @@ build {
       "-e", "ANSIBLE_ROLES_PATH=./roles",
       "-e", "ANSIBLE_REMOTE_TEMP=/tmp/ansible-remote"
     ]
+    staging_directory = "/tmp/ansible"
   }
 }
