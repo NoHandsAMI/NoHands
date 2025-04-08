@@ -49,15 +49,12 @@ build {
   provisioner "ansible-local" {
     playbook_file = "./playbook.yml"
     extra_arguments = [
-      "--user=ubuntu",
-      "--become"
+    "--become"
     ]
-    ansible_env_vars = [
+    environment_vars = [
       "ANSIBLE_ROLES_PATH=../roles",
       "ANSIBLE_REMOTE_TEMP=/tmp/ansible-remote"
     ]
-
-    host_alias = "default"
   }
 }
 
