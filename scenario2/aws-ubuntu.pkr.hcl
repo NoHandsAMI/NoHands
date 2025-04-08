@@ -21,7 +21,7 @@ variable "vpc_id" {
 
 source "amazon-ebs" "ubuntu" {
   ami_name      = "nohands-ami2-{{timestamp}}"
-  instance_type = "t2.micro"
+  instance_type = "t3.small"
   region        = "ap-northeast-2"
   ssh_username  = "ubuntu"
 
@@ -46,12 +46,14 @@ build {
   name    = "nohands-image2"
   sources = ["source.amazon-ebs.ubuntu"]
 
-  provisioner "ansible" {
+  provisioner "ansible-local" {
     playbook_file = "./playbook.yml"
     extra_arguments = [
-    "--become",
-    "-e", "ANSIBLE_ROLES_PATH=../roles",
-    "-e", "ANSIBLE_REMOTE_TEMP=/tmp/ansible-remote"
+    "--become"
+    ]
+    environment_vars = [
+      "ANSIBLE_ROLES_PATH=../roles",
+      "ANSIBLE_REMOTE_TEMP=/tmp/ansible-remote"
     ]
   }
 }
