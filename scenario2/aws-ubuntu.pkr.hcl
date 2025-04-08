@@ -48,7 +48,9 @@ build {
 
   provisioner "shell" {
     inline = [
-      "sudo apt-get update",
+      "sudo rm -rf /var/lib/apt/lists/*",                
+      "sudo apt-get clean",                               
+      "sudo apt-get update -o Acquire::AllowInsecureRepositories=true",
       "sudo apt-get install -y software-properties-common",
       "sudo add-apt-repository --yes --update ppa:ansible/ansible",
       "sudo apt-get install -y ansible"
