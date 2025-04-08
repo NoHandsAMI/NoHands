@@ -59,10 +59,10 @@ build {
   }
 
   provisioner "ansible-local" {
-    playbook_file = "scenario2/playbook.yml"
+    playbook_file = "playbook.yml"
     extra_arguments = [
       "--become",
-      "-e", "ANSIBLE_ROLES_PATH=scenario2/roles",
+      "-e", "ANSIBLE_ROLES_PATH=./roles",
       "-e", "ANSIBLE_REMOTE_TEMP=/tmp/ansible-remote"
     ]
   }
