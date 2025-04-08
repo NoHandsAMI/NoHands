@@ -12,7 +12,7 @@ packer {
 }
 
 variable "subnet_id" {
-  type = list(string)
+  type = string
 }
 
 variable "security_group_id" {
