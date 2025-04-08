@@ -46,15 +46,12 @@ build {
   name    = "nohands-image2"
   sources = ["source.amazon-ebs.ubuntu"]
 
-  provisioner "ansible-local" {
+  provisioner "ansible" {
     playbook_file = "./playbook.yml"
-    extra_arguments = [
-    "--become"
-    ]
-    environment_vars = [
+    extra_arguments  = ["--user=ubuntu", "--become"]
+    ansible_env_vars = [
       "ANSIBLE_ROLES_PATH=../roles",
       "ANSIBLE_REMOTE_TEMP=/tmp/ansible-remote"
     ]
   }
 }
-
