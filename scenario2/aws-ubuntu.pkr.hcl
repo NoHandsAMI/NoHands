@@ -53,17 +53,17 @@ build {
       "sudo apt-get update -o Acquire::AllowInsecureRepositories=true",
       "sudo apt-get install -y software-properties-common",
       "sudo add-apt-repository --yes --update ppa:ansible/ansible",
-      "sudo apt-get install -y ansible"
+      "sudo apt-get install -y ansible",
+      "sudo cp -r /home/ubuntu/scenario2/roles /tmp/"
     ]
   }
 
   provisioner "ansible-local" {
-    playbook_file = "./playbook.yml"
+    playbook_file = "scenario2/playbook.yml"
     extra_arguments = [
       "--become",
-      "-e", "ANSIBLE_ROLES_PATH=./roles",
+      "-e", "ANSIBLE_ROLES_PATH=scenario2/roles",
       "-e", "ANSIBLE_REMOTE_TEMP=/tmp/ansible-remote"
     ]
-    staging_directory = "/tmp/ansible"
   }
 }
