@@ -8,7 +8,9 @@ on:
 jobs:
   build-ami:
     runs-on: ubuntu-latest
-    name: Build AMI for scenario2
+    strategy:
+      matrix:
+        scenario: [scenario2]
 
     steps:
       - name: Checkout repository
