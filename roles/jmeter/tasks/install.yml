@@ -13,7 +13,7 @@
     state: directory
     mode: '0755'
 
-# JMeter 다운로드드
+# JMeter 다운로드
 - name: Download Apache JMeter
   get_url:
     url: https://downloads.apache.org//jmeter/binaries/apache-jmeter-5.6.3.tgz
@@ -26,9 +26,3 @@
     dest: /opt/jmeter
     remote_src: yes
     extra_opts: [--strip-components=1]
-
-- name: Copy CloudWatch Agent config
-  template:
-    src: amazon-cloudwatch-agent.json.j2
-    dest: /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
-    mode: '0644'
