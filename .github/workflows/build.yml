@@ -32,7 +32,7 @@ jobs:
             -machine-readable \
             -var "vpc_id=$VPC_ID" \
             -var "subnet_id=$SUBNET_ID" \
-            packer/aws-ubuntu.pkr.hcl | tee packer_output.log
+            scenario2/packer/aws-ubuntu.pkr.hcl | tee packer_output.log
 
       - name: Extract new AMI ID from build log
         run: |
@@ -45,7 +45,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ap-northeast-2
-        run: bash scripts/check-asg.sh
+        run: bash scenario2/scripts/check-asg.sh
 
       - name: Rolling update ASG if exists
         if: env.ASG_EXISTS == 'true'
@@ -54,7 +54,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ap-northeast-2
           NEW_AMI_ID_FROM_ENV: ${{ env.NEW_AMI_ID_FROM_ENV }}
-        run: bash scripts/rolling-update.sh
+        run: bash scenario2/scripts/rolling-update.sh
 
       - name: Skip ASG update (ASG not found)
         if: env.ASG_EXISTS == 'false'
