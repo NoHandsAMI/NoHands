@@ -9,3 +9,11 @@
     owner: root
     group: root
     mode: '0644'
+
+- name: Log role name to install.log
+  lineinfile:
+    path: /opt/install.log
+    create: yes
+    line: "[motd] 설치 완료"
+    state: present
+    insertafter: EOF

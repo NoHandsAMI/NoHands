@@ -59,3 +59,17 @@ jobs:
       - name: Skip ASG update (ASG not found)
         if: env.ASG_EXISTS == 'false'
         run: echo "No ASG found. Only AMI was created."
+
+      - name: Generate AMI info file
+        run: |
+          bash scenario2/scripts/generate-ami-info.sh ${{ env.NEW_AMI_ID_FROM_ENV }}
+          echo "INFO_FILENAME=$(ls ami-info-*.txt | tail -n 1)" >> $GITHUB_ENV
+
+      - name: Upload AMI info file to S3
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ap-northeast-2
+          INFO_FILENAME: ${{ env.INFO_FILENAME }}
+        run: |
+          aws s3 cp "$INFO_FILENAME" "s3://nohands-s3/ami-info/$INFO_FILENAME"

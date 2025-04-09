@@ -3,3 +3,11 @@
   apt:
     update_cache: yes
     upgrade: yes
+
+- name: Log role name to install.log
+  lineinfile:
+    path: /opt/install.log
+    create: yes
+    line: "[common] 설치 완료"
+    state: present
+    insertafter: EOF
