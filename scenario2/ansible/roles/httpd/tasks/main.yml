@@ -24,10 +24,13 @@
     content: |
       <?php
       $start = microtime(true);
-      while (microtime(true) - $start < 3) {
-          sqrt(rand());
+      $array = [];
+      while (microtime(true) - $start < 60) { // 60초 부하
+          for ($i = 0; $i < 50000; $i++) {
+              $array[] = str_repeat('stress', 50); // CPU + 메모리 부하
+          }
       }
-      echo "CPU stress done";
+      echo "Moderate CPU load complete!";
       ?>
     owner: www-data
     group: www-data

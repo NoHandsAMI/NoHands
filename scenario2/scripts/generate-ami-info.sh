@@ -11,7 +11,7 @@ fi
 
 echo "Generating AMI info for $AMI_ID..."
 
-INSTALL_LOG_CONTENT=$(cat scenario2/ansible/install_logs/install.log 2>/dev/null || echo "⚠️ install.log 파일이 존재하지 않음")
+INSTALL_LOG_CONTENT=$(cat install_logs/install.log 2>/dev/null || echo "⚠️ install.log 파일이 존재하지 않음")
 
 cat <<EOF > $INFO_FILE
 AMI ID: $AMI_ID

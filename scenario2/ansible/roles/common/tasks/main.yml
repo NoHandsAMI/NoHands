@@ -12,8 +12,8 @@
     state: present
     insertafter: EOF
 
-- name: Copy install.log to shared location
+- name: Copy install.log to local path after provisioning
   fetch:
     src: /opt/install.log
-    dest: ../install_logs/install.log
+    dest: install_logs/install.log
     flat: yes
