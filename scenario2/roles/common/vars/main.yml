@@ -1,6 +1,0 @@
-common_packages:
-  - curl
-  - unzip
-  - net-tools
-  - ca-certificates
-  - gnupg

@@ -1,0 +1,12 @@
+- name: Create a shared user
+  user:
+    name: shareduser
+    comment: "Shared Performance User"
+    shell: /bin/bash
+    create_home: yes
+
+- name: Add shareduser to sudoers
+  user:
+    name: shareduser
+    groups: sudo
+    append: yes

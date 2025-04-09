@@ -1,0 +1,11 @@
+- name: Set custom MOTD
+  copy:
+    content: |
+      ********************************************
+      *        Welcome to the NoHands AMI       *
+      *      Managed by Ansible and Packer      *
+      ********************************************
+    dest: /etc/motd
+    owner: root
+    group: root
+    mode: '0644'

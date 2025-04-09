@@ -1,0 +1,11 @@
+---
+- name: Configure Ubuntu 22.04 AMI
+  hosts: all
+  become: yes
+  roles:
+    - common
+    - jmeter
+    - cloudwatch
+    - motd
+    - httpd
+    - user
