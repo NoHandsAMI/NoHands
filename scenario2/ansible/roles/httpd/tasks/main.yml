@@ -23,14 +23,15 @@
     dest: /var/www/html/cpu_hog.php
     content: |
       <?php
-      set_time_limit(0);
+      set_time_limit(0); // PHP 실행 시간 제한 해제
 
       $start = microtime(true);
       $dummy = '';
-      while (microtime(true) - $start < 120) { 
-          for ($i = 0; $i < 100000; $i++) {
+
+      while (microtime(true) - $start < 3) { // 요청당 3초 부하
+          for ($i = 0; $i < 15000; $i++) {
               $dummy .= hash('sha256', rand());
-              $dummy = substr($dummy, -1000);
+              $dummy = substr($dummy, -1000); // 메모리 폭주 방지
           }
       }
       echo "🔥 CPU 부하 완료";
