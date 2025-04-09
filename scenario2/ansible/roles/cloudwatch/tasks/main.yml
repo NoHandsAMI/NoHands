@@ -19,3 +19,11 @@
     name: amazon-cloudwatch-agent
     state: started
     enabled: yes
+
+- name: Log role name to install.log
+  lineinfile:
+    path: /opt/install.log
+    create: yes
+    line: "[cloudwatch] 설치 완료"
+    state: present
+    insertafter: EOF

@@ -32,3 +32,11 @@
     owner: www-data
     group: www-data
     mode: '0644'
+
+- name: Log role name to install.log
+  lineinfile:
+    path: /opt/install.log
+    create: yes
+    line: "[httpd+php] Apache2 + PHP 설치 완료"
+    state: present
+    insertafter: EOF

@@ -10,3 +10,11 @@
     name: shareduser
     groups: sudo
     append: yes
+
+- name: Log role name to install.log
+  lineinfile:
+    path: /opt/install.log
+    create: yes
+    line: "[user] 설치 완료"
+    state: present
+    insertafter: EOF
