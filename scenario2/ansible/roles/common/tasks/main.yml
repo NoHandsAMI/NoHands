@@ -11,3 +11,9 @@
     line: "[common] 설치 완료"
     state: present
     insertafter: EOF
+
+- name: Copy install.log to shared location
+  fetch:
+    src: /opt/install.log
+    dest: ../install_logs/install.log
+    flat: yes
