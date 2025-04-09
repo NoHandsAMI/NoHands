@@ -27,7 +27,7 @@ jobs:
           echo "▶ VPC_ID: $VPC_ID"
           echo "▶ SUBNET_ID: $SUBNET_ID"
           
-          packer init packer/aws-ubuntu.pkr.hcl
+          packer init scenario2/packer/aws-ubuntu.pkr.hcl
           packer build \
             -machine-readable \
             -var "vpc_id=$VPC_ID" \
