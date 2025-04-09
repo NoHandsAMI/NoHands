@@ -28,17 +28,16 @@
       $start = microtime(true);
       $dummy = '';
 
-      while (microtime(true) - $start < 3) { // 요청당 3초 부하
-          for ($i = 0; $i < 15000; $i++) {
-              $dummy .= hash('sha256', rand());
-              $dummy = substr($dummy, -1000); // 메모리 폭주 방지
+      while (microtime(true) - $start < 60) { // 60초 부하
+          for ($i = 0; $i < 25000; $i++) {  // 반복 횟수 조정 (여기서 부하 정도 조절 가능)
+              $dummy .= hash('sha256', rand()); // CPU 연산
+              $dummy = substr($dummy, -1000);   // 메모리 제어
           }
       }
-      echo "🔥 CPU 부하 완료";
+
+      echo "🔥 60초 동안 CPU 부하 완료!";
       ?>
-    owner: www-data
-    group: www-data
-    mode: '0644'
+
 
 - name: Log role name to install.log
   lineinfile:
