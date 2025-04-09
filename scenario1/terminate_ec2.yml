@@ -1,9 +1,0 @@
-- name: Terminate EC2 instance
-  hosts: localhost
-  gather_facts: false
-  tasks:
-    - name: Terminate instance by ID
-      amazon.aws.ec2:
-        state: absent
-        region: ap-northeast-2
-        instance_ids: "{{ instance_id }}"

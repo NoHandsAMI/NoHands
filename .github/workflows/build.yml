@@ -1,4 +1,4 @@
-name: Create NoHands AMIs
+name: Build and Deploy NoHands AMI
 
 on:
   push:
@@ -6,90 +6,56 @@ on:
       - main
 
 jobs:
-  build-ami:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        scenario: [scenario2]
-    name: Build AMI for ${{ matrix.scenario }}
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Docker
-        uses: docker/setup-buildx-action@v3
+      - name: Set up Packer
+        uses: hashicorp/setup-packer@v2
 
-      - name: Build Docker image for Packer + Ansible
-        run: docker build -t packer-ansible-builder .
-
-      - name: Set Packer Vars
-        id: set-vars
-        run: |
-          if [ "${{ matrix.scenario }}" = "scenario1" ]; then
-            echo 'PACKER_VARS=-var subnet_id=${{ secrets.SUBNET_ID }} -var security_group_id=${{ secrets.SECURITY_GROUP_ID }}' >> $GITHUB_ENV
-          else
-            echo 'PACKER_VARS=-var subnet_id=${{ secrets.SUBNET_ID }} -var vpc_id=${{ secrets.VPC_ID }}' >> $GITHUB_ENV
-          fi
-
-      - name: Initialize Packer Plugins
-        run: |
-          docker run --rm \
-            -v ${{ github.workspace }}:/workspace \
-            -v ${{ github.workspace }}/.packer-plugins:/root/.config/packer/plugins \
-            -w /workspace/${{ matrix.scenario }} \
-            packer-ansible-builder \
-            packer init .
-
-      - name: Run Packer Build for ${{ matrix.scenario }} and capture AMI ID
-        id: packer-build
-        run: |
-          docker run --rm \
-            -v ${{ github.workspace }}:/workspace \
-            -v ${{ github.workspace }}/.packer-plugins:/root/.config/packer/plugins \
-            -w /workspace/${{ matrix.scenario }} \
-            -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
-            -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
-            packer-ansible-builder \
-            packer build -machine-readable $PACKER_VARS aws-ubuntu.pkr.hcl \
-            | tee packer-output.log
-
-          AMI_ID=$(grep 'artifact,0,id' packer-output.log | cut -d, -f6 | cut -d: -f2)
-          echo "AMI_ID=$AMI_ID"
-          echo "AMI_ID=$AMI_ID" >> $GITHUB_ENV
-
-      - name: Update Launch Template with new AMI
+      - name: Init & Build AMI with Packer
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ap-northeast-2
+          VPC_ID: ${{ secrets.VPC_ID }}
+          SUBNET_ID: ${{ secrets.SUBNET_ID }}
         run: |
-          aws ec2 create-launch-template-version \
-            --launch-template-name "NoHands_final_tp" \
-            --source-version \$Latest \
-            --launch-template-data "{\"ImageId\":\"$AMI_ID\"}" \
-            --region ap-northeast-2
+          echo "▶ VPC_ID: $VPC_ID"
+          echo "▶ SUBNET_ID: $SUBNET_ID"
+          
+          packer init packer/aws-ubuntu.pkr.hcl
+          packer build \
+            -machine-readable \
+            -var "vpc_id=$VPC_ID" \
+            -var "subnet_id=$SUBNET_ID" \
+            packer/aws-ubuntu.pkr.hcl | tee packer_output.log
 
-          aws ec2 modify-launch-template \
-            --launch-template-name "NoHands_final_tp" \
-            --default-version \$Latest \
-            --region ap-northeast-2
+      - name: Extract new AMI ID from build log
+        run: |
+          AMI_ID=$(grep 'artifact,0,id' packer_output.log | cut -d, -f6 | cut -d: -f2)
+          echo "NEW_AMI_ID_FROM_ENV=$AMI_ID" >> $GITHUB_ENV
+          echo "Built AMI ID: $AMI_ID"
 
-      - name: Trigger ASG Rolling Update
+      - name: Check if ASG exists
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: |
-          aws autoscaling start-instance-refresh \
-            --auto-scaling-group-name "NoHands_final_ASG" \
-            --strategy Rolling \
-            --preferences '{"MinHealthyPercentage": 100, "InstanceWarmup": 60}' \
-            --region ap-northeast-2
+          AWS_REGION: ap-northeast-2
+        run: bash scripts/check-asg.sh
 
-      - name: Check ASG Rolling Update Status
+      - name: Rolling update ASG if exists
+        if: env.ASG_EXISTS == 'true'
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: |
-          aws autoscaling describe-instance-refreshes \
-            --auto-scaling-group-name "NoHands_final_ASG" \
-            --region ap-northeast-2
+          AWS_REGION: ap-northeast-2
+          NEW_AMI_ID_FROM_ENV: ${{ env.NEW_AMI_ID_FROM_ENV }}
+        run: bash scripts/rolling-update.sh
+
+      - name: Skip ASG update (ASG not found)
+        if: env.ASG_EXISTS == 'false'
+        run: echo "No ASG found. Only AMI was created."

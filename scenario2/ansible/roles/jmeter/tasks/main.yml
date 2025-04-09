@@ -1,0 +1,56 @@
+---
+- name: Ensure universe repository is added
+  shell: |
+    add-apt-repository universe
+    apt update
+
+- name: Install dependencies for Java manually
+  apt:
+    name:
+      - libgtk2.0-0
+      - libgtk-3-0
+      - libxrandr2
+      - libxinerama1
+      - libgl1
+      - libjpeg8
+      - libxi6
+      - libxrender1
+      - libxtst6
+      - libatk-wrapper-java-jni
+      - fonts-dejavu-extra
+      - libfontconfig1
+      - liblcms2-2
+      - libasound2
+      - libharfbuzz0b
+      - libpcsclite1
+      - java-common
+    state: present
+    update_cache: yes
+
+- name: Install Java
+  apt:
+    name: openjdk-17-jdk
+    state: present
+
+- name: Download JMeter
+  get_url:
+    url: https://downloads.apache.org/jmeter/binaries/apache-jmeter-5.6.3.tgz
+    dest: /opt/apache-jmeter-5.6.3.tgz
+
+- name: Extract JMeter
+  unarchive:
+    src: /opt/apache-jmeter-5.6.3.tgz
+    dest: /opt/
+    remote_src: yes
+
+- name: Create symbolic link for /opt/jmeter → /opt/apache-jmeter-5.6.3
+  file:
+    src: /opt/apache-jmeter-5.6.3
+    dest: /opt/jmeter
+    state: link
+
+- name: Create symbolic link for JMeter
+  file:
+    src: /opt/apache-jmeter-5.6.3/bin/jmeter
+    dest: /usr/bin/jmeter
+    state: link
