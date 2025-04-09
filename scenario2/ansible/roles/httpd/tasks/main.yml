@@ -10,7 +10,25 @@
     state: started
     enabled: yes
 
-- name: Add simple test HTML page
+- name: Install PHP and dependencies
+  apt:
+    name:
+      - php
+      - libapache2-mod-php
+    state: present
+    update_cache: yes
+
+- name: Add CPU load PHP script
   copy:
-    content: "<h1>Hello from NoHands AMI Instance</h1>"
-    dest: /var/www/html/index.html
+    dest: /var/www/html/cpu_hog.php
+    content: |
+      <?php
+      $start = microtime(true);
+      while (microtime(true) - $start < 3) {
+          sqrt(rand());
+      }
+      echo "CPU stress done";
+      ?>
+    owner: www-data
+    group: www-data
+    mode: '0644'
