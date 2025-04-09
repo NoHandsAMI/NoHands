@@ -23,14 +23,17 @@
     dest: /var/www/html/cpu_hog.php
     content: |
       <?php
+      set_time_limit(0);
+
       $start = microtime(true);
-      $array = [];
-      while (microtime(true) - $start < 60) { // 60초 부하
-          for ($i = 0; $i < 50000; $i++) {
-              $array[] = str_repeat('stress', 50); // CPU + 메모리 부하
+      $dummy = '';
+      while (microtime(true) - $start < 120) { 
+          for ($i = 0; $i < 100000; $i++) {
+              $dummy .= hash('sha256', rand());
+              $dummy = substr($dummy, -1000);
           }
       }
-      echo "Moderate CPU load complete!";
+      echo "🔥 CPU 부하 완료";
       ?>
     owner: www-data
     group: www-data
