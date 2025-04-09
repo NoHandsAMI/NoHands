@@ -1,0 +1,7 @@
+- name: JMeter, CloudWatch Role
+  hosts: all
+  become: true
+  roles:
+    - cloudwatch
+    - jmeter
+    - common
